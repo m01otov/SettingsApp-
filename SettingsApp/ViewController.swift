@@ -7,6 +7,13 @@
 
 import UIKit
 
+//Разделы
+
+struct Section {
+    let title: String
+    let option: [SettingsOption]
+}
+
 //Состав ячейки
 struct SettingsOption {
     let title: String
@@ -26,7 +33,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
 //Создадим множество моделей:
 
-    var models = [SettingsOption]()
+    var models = [Section]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,17 +46,65 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
 
     func configure() {
-            self.models = Array(0...15).compactMap({
-            SettingsOption(title: "Item \($0)", icon: UIImage(systemName: "house"), iconBackgroundColor: .systemPink) {
-                }})
+
+        models.append(Section(title: "General", option: [
+            SettingsOption(title: "Wifi", icon: UIImage(systemName: "wifi"), iconBackgroundColor: .link, handler:  {
+                print("Tap General")
+            }),
+            SettingsOption(title: "Bluetooth", icon: UIImage(systemName: "bluetooth"), iconBackgroundColor: .systemGray, handler: {
+
+            }),
+            SettingsOption(title: "Airplane Mode", icon: UIImage(systemName: "airplane"), iconBackgroundColor: .systemBlue, handler: {
+
+            }),
+            SettingsOption(title: "iCloud", icon: UIImage(systemName: "cloud"), iconBackgroundColor: .systemBlue, handler: {
+
+            })
+
+        ]))
+        models.append(Section(title: "Information", option: [
+            SettingsOption(title: "Wifi", icon: UIImage(systemName: "wifi"), iconBackgroundColor: .link, handler: {
+
+            }),
+            SettingsOption(title: "Bluetooth", icon: UIImage(systemName: "bluetooth"), iconBackgroundColor: .systemGray, handler: {
+
+            }),
+            SettingsOption(title: "Airplane Mode", icon: UIImage(systemName: "airplane"), iconBackgroundColor: .systemBlue, handler: {
+
+            })
+
+        ]))
+        models.append(Section(title: "Apps", option: [
+            SettingsOption(title: "Wifi", icon: UIImage(systemName: "wifi"), iconBackgroundColor: .link, handler: {
+
+            }),
+            SettingsOption(title: "Bluetooth", icon: UIImage(systemName: "bluetooth"), iconBackgroundColor: .systemGray, handler: {
+
+            }),
+            SettingsOption(title: "Airplane Mode", icon: UIImage(systemName: "airplane"), iconBackgroundColor: .systemBlue, handler: {
+
+            })
+
+        ]))
     }
 
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        let section = models[section]
+        return section.title
+    }
+
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return models.count
+    }
     //Добавим функции которые требуются для таблицы
         func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return models.count   }
+            return models[section].option.count
+
+        }
 
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            let model = models[indexPath.row]
+            let model = models[indexPath.section].option[indexPath.row]
             guard let cell = tableView.dequeueReusableCell(withIdentifier: SettingTableViewCell.identifier, for: indexPath)
             as? SettingTableViewCell else {
                 return UITableViewCell()
@@ -58,4 +113,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             return cell
 
         }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let model = models[indexPath.section].option[indexPath.row]
+        model.handler()
+    }
 }
