@@ -38,6 +38,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     private let tableView: UITableView = {
         let table = UITableView(frame: .zero, style: .grouped)
         table.register(SettingTableViewCell.self, forCellReuseIdentifier: SettingTableViewCell.identifier)
+        table.register(SwitchTableViewCell.self, forCellReuseIdentifier: SwitchTableViewCell.identifier)
         return table
 
        }()
@@ -57,9 +58,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
 
     func configure() {
-        models.append(Section(title: "General", option: [.staticCell(model: SettingsOption(title: "Авиарежим", icon: UIImage(systemName: "airplane"), iconBackgroundColor: .systemOrange, handler: {
 
-        })),
+//        models.append(Section(title: "General", option: [.staticCell(model: SettingsOption(title: "Авиарежим", icon: UIImage(systemName: "airplane"), iconBackgroundColor: .systemOrange, handler: {
+//
+//        })),
+        models.append(Section(title: "Основные", option:[.switchCell(model: SettingsSwitchOption(title: "Авиарежим", icon: UIImage(systemName: "airplane"), iconBackgroundColor: .systemOrange, handler: {
+
+        }, isOne: true)),
+
         .staticCell(model: SettingsOption(title: "Wifi", icon: UIImage(systemName: "wifi"), iconBackgroundColor: .systemBlue, handler: {
         })),
         .staticCell(model: SettingsOption(title: "Bluetooth", icon: UIImage(systemName: "dot.radiowaves.up.forward"), iconBackgroundColor: .systemBlue, handler: {
@@ -114,7 +120,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     cell.configure(with: model)
                     return cell
             case .switchCell(let model):
-                    return UITableViewCell()
+
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: SwitchTableViewCell.identifier, for: indexPath) as? SwitchTableViewCell else {
+                            return UITableViewCell()
+                        }
+                        cell.configure(with: model)
+                        return cell
             }
         }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
