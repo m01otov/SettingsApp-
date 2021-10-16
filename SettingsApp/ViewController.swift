@@ -11,9 +11,20 @@ import UIKit
 
 struct Section {
     let title: String
-    let option: [SettingsOption]
+    let option: [SettingsOptionType]
+}
+enum SettingsOptionType {
+    case staticCell(model: SettingsOption)
+    case switchCell(model: SettingsSwitchOption)
 }
 
+struct SettingsSwitchOption {
+    let title: String
+    let icon: UIImage?
+    let iconBackgroundColor: UIColor
+    let handler: (() -> Void)
+    let isOne: Bool
+}
 //Состав ячейки
 struct SettingsOption {
     let title: String
@@ -38,7 +49,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
-        title = "Settings"
+        title = "Настройки"
         view.addSubview(tableView)
         tableView.delegate = self
         tableView.dataSource = self
@@ -46,46 +57,35 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
 
     func configure() {
+        models.append(Section(title: "General", option: [.staticCell(model: SettingsOption(title: "Авиарежим", icon: UIImage(systemName: "airplane"), iconBackgroundColor: .systemOrange, handler: {
 
-        models.append(Section(title: "General", option: [
-            SettingsOption(title: "Wifi", icon: UIImage(systemName: "wifi"), iconBackgroundColor: .link, handler:  {
-                print("Tap General")
-            }),
-            SettingsOption(title: "Bluetooth", icon: UIImage(systemName: "bluetooth"), iconBackgroundColor: .systemGray, handler: {
+        })),
+        .staticCell(model: SettingsOption(title: "Wifi", icon: UIImage(systemName: "wifi"), iconBackgroundColor: .systemBlue, handler: {
+        })),
+        .staticCell(model: SettingsOption(title: "Bluetooth", icon: UIImage(systemName: "dot.radiowaves.up.forward"), iconBackgroundColor: .systemBlue, handler: {
+        })),
+        .staticCell(model: SettingsOption(title: "Сотовая связь", icon: UIImage(systemName: "antenna.radiowaves.left.and.right"), iconBackgroundColor: .systemGreen, handler: {
+        })),
+        .staticCell(model: SettingsOption(title: "Режим модема", icon: UIImage(systemName: "personalhotspot"), iconBackgroundColor: .systemGreen, handler: {
+        })),
+        .staticCell(model: SettingsOption(title: "VPN", icon: UIImage(systemName: "network.badge.shield.half.filled"), iconBackgroundColor: .systemBlue, handler: {
+        })),
 
-            }),
-            SettingsOption(title: "Airplane Mode", icon: UIImage(systemName: "airplane"), iconBackgroundColor: .systemBlue, handler: {
+]))
+        models.append(Section(title: "", option: [.staticCell(model: SettingsOption(title: "Уведомления", icon: UIImage(systemName: "app.badge"), iconBackgroundColor: .systemRed, handler: {
 
-            }),
-            SettingsOption(title: "iCloud", icon: UIImage(systemName: "cloud"), iconBackgroundColor: .systemBlue, handler: {
+        })),
+        .staticCell(model: SettingsOption(title: "Звуки, тактильные синалы", icon: UIImage(systemName: "music.note"), iconBackgroundColor: .systemRed, handler: {
+        })),
+        .staticCell(model: SettingsOption(title: "Не беспокоить", icon: UIImage(systemName: "bed.double.fill"), iconBackgroundColor: .systemBlue, handler: {
+        })),
+        .staticCell(model: SettingsOption(title: "Сотовая связь", icon: UIImage(systemName: "antenna.radiowaves.left.and.right"), iconBackgroundColor: .systemGreen, handler: {
+        })),
+        .staticCell(model: SettingsOption(title: "Экранное время", icon: UIImage(systemName: "person.crop.circle.badge.clock"), iconBackgroundColor: .systemBlue, handler: {
+        }))
 
-            })
+]))
 
-        ]))
-        models.append(Section(title: "Information", option: [
-            SettingsOption(title: "Wifi", icon: UIImage(systemName: "wifi"), iconBackgroundColor: .link, handler: {
-
-            }),
-            SettingsOption(title: "Bluetooth", icon: UIImage(systemName: "bluetooth"), iconBackgroundColor: .systemGray, handler: {
-
-            }),
-            SettingsOption(title: "Airplane Mode", icon: UIImage(systemName: "airplane"), iconBackgroundColor: .systemBlue, handler: {
-
-            })
-
-        ]))
-        models.append(Section(title: "Apps", option: [
-            SettingsOption(title: "Wifi", icon: UIImage(systemName: "wifi"), iconBackgroundColor: .link, handler: {
-
-            }),
-            SettingsOption(title: "Bluetooth", icon: UIImage(systemName: "bluetooth"), iconBackgroundColor: .systemGray, handler: {
-
-            }),
-            SettingsOption(title: "Airplane Mode", icon: UIImage(systemName: "airplane"), iconBackgroundColor: .systemBlue, handler: {
-
-            })
-
-        ]))
     }
 
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -105,17 +105,28 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
             let model = models[indexPath.section].option[indexPath.row]
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: SettingTableViewCell.identifier, for: indexPath)
-            as? SettingTableViewCell else {
-                return UITableViewCell()
-            }
-            cell.configure(with: model)
-            return cell
 
+            switch model.self {
+            case .staticCell(let model):
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: SettingTableViewCell.identifier, for: indexPath) as? SettingTableViewCell else {
+                        return UITableViewCell()
+                    }
+                    cell.configure(with: model)
+                    return cell
+            case .switchCell(let model):
+                    return UITableViewCell()
+            }
         }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let model = models[indexPath.section].option[indexPath.row]
-        model.handler()
+        let type = models[indexPath.section].option[indexPath.row]
+
+        switch type.self {
+        case .staticCell(let model):
+            model.handler()
+        case .switchCell(let model):
+            model.handler()
+        }
+
     }
 }
